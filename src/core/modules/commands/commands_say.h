@@ -31,7 +31,13 @@
 //-----------------------------------------------------------------------------
 #include "utilities/sp_util.h"
 #include "commands.h"
+
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
+#include "convar.h"
 #include "edict.h"
+#undef private
+
 #include "game/server/iplayerinfo.h"
 
 #include "modules/listeners/listeners_manager.h"

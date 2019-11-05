@@ -29,7 +29,11 @@
 //---------------------------------------------------------------------------------
 // Includes
 //---------------------------------------------------------------------------------
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
 #include "engine/iserverplugin.h"
+#undef private
+
 #include "igameevents.h"
 #include "modules/memory/memory_tools.h"
 

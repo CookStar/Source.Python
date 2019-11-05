@@ -30,7 +30,12 @@
 // Includes.
 //-----------------------------------------------------------------------------
 #include "utilities/wrap_macros.h"
+
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
 #include "convar.h"
+#undef private
+
 #include "utilities/ipythongenerator.h"
 #include "boost/typeof/typeof.hpp" 
 

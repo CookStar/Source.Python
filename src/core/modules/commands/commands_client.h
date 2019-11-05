@@ -32,8 +32,13 @@
 #include "sp_python.h"
 #include "utilities/sp_util.h"
 #include "utilities/wrap_macros.h"
-#include "edict.h"
+
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
 #include "convar.h"
+#include "edict.h"
+#undef private
+
 #include "commands.h"
 #include "game/server/iplayerinfo.h"
 

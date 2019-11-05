@@ -27,9 +27,6 @@
 //-----------------------------------------------------------------------------
 // Includes.
 //-----------------------------------------------------------------------------
-// This is required for accessing m_nFlags without patching convar.h
-#define private public
-
 #include "utilities/wrap_macros.h"
 #include "export_main.h"
 #include "modules/memory/memory_tools.h"

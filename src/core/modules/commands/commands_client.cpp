@@ -27,14 +27,16 @@
 //-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
-// This is required for accessing m_nFlags without patching convar.h
-#define private public
-
 #include "boost/unordered_map.hpp"
 #include "commands_client.h"
 #include "commands.h"
-#include "edict.h"
+
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
 #include "convar.h"
+#include "edict.h"
+#undef private
+
 #include "engine/iserverplugin.h"
 #include "utilities/call_python.h"
 #include "boost/python/call.hpp"
@@ -69,7 +71,7 @@ CClientCommandManager* GetClientCommand(const char* szName)
 	if (!find_manager<ClientCommandMap, ClientCommandMap::iterator>(g_ClientCommandMap, szName, iter))
 	{
 		manager = new CClientCommandManager(szName);
-		g_ClientCommandMap.insert(std::make_pair(manager->m_Name, manager));
+		g_ClientCommandMap.insert(std::make_pair(manager->GetName(), manager));
 	}
 	else
 	{

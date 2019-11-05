@@ -29,7 +29,10 @@
 //-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
+// This is required for accessing m_nFlags without patching convar.h
+#define private public
 #include "convar.h"
+#undef private
 
 #include "modules/listeners/listeners_manager.h"
 #include "hook.h"
@@ -46,6 +49,8 @@ public:
 
 	void AddCallback(PyObject* pCallable, HookType_t type);
 	void RemoveCallback(PyObject* pCallable, HookType_t type);
+
+	const char* GetName();
 
 protected:
 	void Dispatch( const CCommand& command);
