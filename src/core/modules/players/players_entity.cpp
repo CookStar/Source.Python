@@ -51,6 +51,25 @@ boost::shared_ptr<PlayerMixin> PlayerMixin::wrap(CBaseEntity* pEntity)
 	);
 }
 
+object PlayerMixin::_obj(object cls, CPointer *pPtr)
+{
+	return cls(object(ExcIndexFromPointer(pPtr)));
+}
+
+bool PlayerMixin::IsNetworked()
+{
+	return true;
+}
+
+bool PlayerMixin::IsPlayer()
+{
+	return true;
+}
+
+bool PlayerMixin::IsWeapon()
+{
+	return false;
+}
 
 // CBasePlayer
 float PlayerMixin::GetSpeed()

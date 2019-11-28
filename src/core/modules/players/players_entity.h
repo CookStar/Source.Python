@@ -66,7 +66,12 @@ class PlayerMixin: public CBaseEntityWrapper
 public:
 	static boost::shared_ptr<PlayerMixin> __init__(unsigned int uiEntityIndex);
 	static boost::shared_ptr<PlayerMixin> wrap(CBaseEntity* pEntity);
-	
+	static object _obj(object cls, CPointer *pPtr);
+
+	bool IsNetworked();
+	bool IsPlayer();
+	bool IsWeapon();
+
 	// CBasePlayer
 	// TODO: Return for some of these the proper entity class instead of a handle/index
 	// E. g. BaseEntity, Entity, Weapon, Player, etc.

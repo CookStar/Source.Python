@@ -24,8 +24,21 @@ __all__ = ('Weapon',
 # =============================================================================
 # >> CLASSES
 # =============================================================================
-class Weapon(Entity, WeaponMixin):
+class Weapon(WeaponMixin, Entity):
     """Allows easy usage of the weapon's attributes."""
+
+    def __init__(self, index, caching=True):
+        """Initialize the object.
+
+        :param int index:
+            A valid weapon index.
+        :param bool caching:
+            Whether to lookup the cache for an existing instance or not.
+        :raise ValueError:
+            Raised if the index is invalid.
+        """
+        WeaponMixin.__init__(self, index)
+        Entity.__init__(self, index)
 
     def _validate_clip(self):
         """Test if the weapon has a clip."""

@@ -74,18 +74,21 @@ from auth.manager import auth_manager
 # =============================================================================
 # >> CLASSES
 # =============================================================================
-class Player(Entity, PlayerMixin):
+class Player(PlayerMixin, Entity):
     """Class used to interact directly with players."""
 
-    def __init__(self, index):
+    def __init__(self, index, caching=True):
         """Initialize the object.
 
         :param int index:
             A valid player index.
+        :param bool caching:
+            Whether to lookup the cache for an existing instance or not.
         :raise ValueError:
             Raised if the index is invalid.
         """
-        super().__init__(index)
+        PlayerMixin.__init__(self, index)
+        Entity.__init__(self, index)
         object.__setattr__(self, '_playerinfo', None)
 
     @classmethod

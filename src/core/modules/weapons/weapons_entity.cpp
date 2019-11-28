@@ -38,9 +38,8 @@ boost::shared_ptr<WeaponMixin> WeaponMixin::__init__(unsigned int uiEntityIndex)
 {
 	CBaseEntityWrapper* pEntity = (CBaseEntityWrapper*) ExcBaseEntityFromIndex(uiEntityIndex);
 
-	// TODO
-	//if (!pEntity->IsPlayer())
-	//	BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Index '%d' is not a valid weapon.", uiEntityIndex);
+	if (!pEntity->IsWeapon())
+		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Index '%d' is not a valid weapon.", uiEntityIndex);
 
 	return WeaponMixin::wrap(pEntity->GetBaseEntity());
 }
@@ -53,6 +52,25 @@ boost::shared_ptr<WeaponMixin> WeaponMixin::wrap(CBaseEntity* pEntity)
 	);
 }
 
+object WeaponMixin::_obj(object cls, CPointer *pPtr)
+{
+	return cls(object(ExcIndexFromPointer(pPtr)));
+}
+
+bool WeaponMixin::IsNetworked()
+{
+	return true;
+}
+
+bool WeaponMixin::IsPlayer()
+{
+	return false;
+}
+
+bool WeaponMixin::IsWeapon()
+{
+	return true;
+}
 
 // CBaseCombatWeapon
 float WeaponMixin::GetNextAttack()
