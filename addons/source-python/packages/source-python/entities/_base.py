@@ -10,6 +10,8 @@
 from collections import defaultdict
 #   Contextlib
 from contextlib import suppress
+#   Inspect
+from inspect import signature
 #   WeakRef
 from weakref import WeakSet
 
@@ -50,6 +52,8 @@ from filters.weapons import WeaponClassIter
 from listeners import OnEntityDeleted
 from listeners import on_entity_deleted_listener_manager
 from listeners.tick import Delay
+from listeners.tick import Repeat
+from listeners.tick import RepeatStatus
 #   Mathlib
 from mathlib import NULL_VECTOR
 #   Memory
@@ -70,6 +74,9 @@ _projectile_weapons = [weapon.name for weapon in WeaponClassIter('grenade')]
 # Get a dictionary to store the delays
 _entity_delays = defaultdict(set)
 
+# Get a dictionary to store the repeats
+_entity_repeats = defaultdict(set)
+
 # Get a set to store the registered entity classes
 _entity_classes = WeakSet()
 
@@ -85,10 +92,20 @@ class _EntityCaching(BoostPythonClass):
         # New instances of this class will be cached in that dictionary
         cls._cache = {}
 
+        # Set whether or not this class is caching its instances by default
+        try:
+            cls._caching = bool(
+                signature(
+                    vars(cls)['__init__']
+                ).parameters['caching'].default
+            )
+        except KeyError:
+            cls._caching = bool(vars(cls).get('caching', False))
+
         # Add the class to the registered classes
         _entity_classes.add(cls)
 
-    def __call__(cls, index, caching=True):
+    def __call__(cls, index, caching=None):
         """Called when a new instance of this class is requested.
 
         :param int index:
@@ -96,6 +113,10 @@ class _EntityCaching(BoostPythonClass):
         :param bool caching:
             Whether to lookup the cache for an existing instance or not.
         """
+        # Get whether or not we should lookup for a cached instance
+        if caching is None:
+            caching = cls._caching
+
         # Let's first lookup for a cached instance
         if caching:
             obj = cls._cache.get(index, None)
@@ -111,6 +132,14 @@ class _EntityCaching(BoostPythonClass):
 
         # We are done, let's return the instance
         return obj
+
+    @property
+    def caching(cls):
+        """Returns whether this class is caching its instances by default.
+
+        :rtype: bool
+        """
+        return cls._caching
 
     @property
     def cache(cls):
@@ -141,6 +170,10 @@ class Entity(BaseEntity, metaclass=_EntityCaching):
         .. note::
             This is not an instance property, so it can only be
             accessed through the class itself.
+
+    :var caching:
+        A read-only attribute that returns whether this class is caching its
+        instances by default.
     """
 
     def __init__(self, index, caching=True):
@@ -274,14 +307,16 @@ class Entity(BaseEntity, metaclass=_EntityCaching):
         return entity
 
     @classmethod
-    def from_inthandle(cls, inthandle):
+    def from_inthandle(cls, inthandle, caching=None):
         """Create an entity instance from an inthandle.
 
         :param int inthandle:
             The inthandle.
+        :param bool caching:
+            Whether to lookup the cache for an existing instance or not.
         :rtype: Entity
         """
-        return cls(index_from_inthandle(inthandle))
+        return cls(index_from_inthandle(inthandle), caching=caching)
 
     @classmethod
     def _obj(cls, ptr):
@@ -774,7 +809,7 @@ class Entity(BaseEntity, metaclass=_EntityCaching):
     def delay(
             self, delay, callback, args=(), kwargs=None,
             cancel_on_level_end=False):
-        """Execute a callback after the given delay.
+        """Create the delay which will be stopped after removing the entity.
 
         :param float delay:
             The delay in seconds.
@@ -816,6 +851,33 @@ class Entity(BaseEntity, metaclass=_EntityCaching):
 
         # Return the delay instance...
         return delay
+
+    def repeat(self, callback, args=(), kwargs=None, cancel_on_level_end=False):
+        """Create the repeat which will be stopped after removing the entity.
+
+        :param callback:
+            A callable object that should be called at the end of each loop.
+        :param tuple args:
+            Arguments that should be passed to the callback.
+        :param dict kwargs:
+            Keyword arguments that should be passed to the callback.
+        :param bool cancel_on_level_end:
+            Whether or not to cancel the delay at the end of the map.
+        :raise ValueError:
+            Raised if the given callback is not callable.
+        :return:
+            The repeat instance.
+        :rtype: Repeat
+        """
+
+        # Get the repeat instance...
+        repeat = Repeat(callback, args, kwargs, cancel_on_level_end)
+
+        # Add the repeat to the dictionary...
+        _entity_repeats[self.index].add(repeat)
+
+        # Return the repeat instance...
+        return repeat
 
     def get_input(self, name):
         """Return the input function matching the given name.
@@ -1103,19 +1165,30 @@ def _on_entity_deleted(base_entity):
     for cls in _entity_classes:
         cls.cache.pop(index, None)
 
-    # Was no delay registered for this entity?
-    if index not in _entity_delays:
-        return
+    # Was delay registered for this entity?
+    if index in _entity_delays:
+        # Loop through all delays...
+        for delay in _entity_delays[index]:
 
-    # Loop through all delays...
-    for delay in _entity_delays[index]:
+            # Make sure the delay is still running...
+            if not delay.running:
+                continue
 
-        # Make sure the delay is still running...
-        if not delay.running:
-            continue
+            # Cancel the delay...
+            delay.cancel()
 
-        # Cancel the delay...
-        delay.cancel()
+        # Remove the entity from the dictionary...
+        del _entity_delays[index]
 
-    # Remove the entity from the dictionary...
-    del _entity_delays[index]
+    # Was repeat registered for this entity?
+    if index in _entity_repeats:
+        # Loop through all repeats...
+        for repeat in _entity_repeats[index]:
+
+            # Stop the repeat if running
+            if repeat.status is RepeatStatus.RUNNING:
+                repeat.stop()
+
+        # Remove the entity from the dictionary...
+        del _entity_repeats[index]
+            
