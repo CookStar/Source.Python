@@ -456,7 +456,7 @@ Set(SOURCEPYTHON_VTF_MODULE_HEADERS
 Set(SOURCEPYTHON_VTF_MODULE_SOURCES
     core/modules/vtf/vtf.cpp
     core/modules/vtf/vtf_wrap.cpp
-	core/modules/vtf/vtf_constants_wrap.cpp
+    core/modules/vtf/vtf_constants_wrap.cpp
 )
 
 # ------------------------------------------------------------------
