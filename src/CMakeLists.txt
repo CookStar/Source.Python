@@ -447,6 +447,19 @@ Set(SOURCEPYTHON_STUDIO_MODULE_SOURCES
 )
 
 # ------------------------------------------------------------------
+# VTF module.
+# ------------------------------------------------------------------
+Set(SOURCEPYTHON_VTF_MODULE_HEADERS
+    core/modules/vtf/vtf.h
+)
+
+Set(SOURCEPYTHON_VTF_MODULE_SOURCES
+    core/modules/vtf/vtf.cpp
+    core/modules/vtf/vtf_wrap.cpp
+	core/modules/vtf/vtf_constants_wrap.cpp
+)
+
+# ------------------------------------------------------------------
 # Weapons module.
 # ------------------------------------------------------------------
 Set(SOURCEPYTHON_WEAPONS_MODULE_HEADERS
@@ -542,6 +555,9 @@ Set(SOURCEPYTHON_MODULE_FILES
     ${SOURCEPYTHON_STUDIO_MODULE_HEADERS}
     ${SOURCEPYTHON_STUDIO_MODULE_SOURCES}
 
+    ${SOURCEPYTHON_VTF_MODULE_HEADERS}
+    ${SOURCEPYTHON_VTF_MODULE_SOURCES}
+
     ${SOURCEPYTHON_WEAPONS_MODULE_HEADERS}
     ${SOURCEPYTHON_WEAPONS_MODULE_SOURCES}
 )
@@ -578,6 +594,7 @@ Source_Group("Header Files\\Modules\\Filters"                FILES ${SOURCEPYTHO
 Source_Group("Header Files\\Modules\\StringTables"           FILES ${SOURCEPYTHON_STRINGTABLES_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Steam"                  FILES ${SOURCEPYTHON_STEAM_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Studio"                 FILES ${SOURCEPYTHON_STUDIO_MODULE_HEADERS})
+Source_Group("Header Files\\Modules\\VTF"                    FILES ${SOURCEPYTHON_VTF_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Weapons"                FILES ${SOURCEPYTHON_WEAPONS_MODULE_HEADERS})
 
 Source_Group("Source Files\\Core"                           FILES ${SOURCEPYTHON_CORE_SOURCES})
@@ -608,6 +625,7 @@ Source_Group("Source Files\\Modules\\Filters"                FILES ${SOURCEPYTHO
 Source_Group("Source Files\\Modules\\Steam"                  FILES ${SOURCEPYTHON_STEAM_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\StringTables"           FILES ${SOURCEPYTHON_STRINGTABLES_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Studio"                 FILES ${SOURCEPYTHON_STUDIO_MODULE_SOURCES})
+Source_Group("Source Files\\Modules\\VTF"                    FILES ${SOURCEPYTHON_VTF_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Weapons"                FILES ${SOURCEPYTHON_WEAPONS_MODULE_SOURCES})
 
 # ------------------------------------------------------------------
