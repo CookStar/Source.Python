@@ -208,7 +208,8 @@ void export_vtf_texture(scope _vtf)
 		)
 
 		.def("compute_mip_size",
-			&IVTFTexture::ComputeMipSize
+			&IVTFTexture::ComputeMipSize,
+			arg("mip_level")
 		)
 		.def("compute_face_size",
 			&IVTFTexture::ComputeFaceSize,
@@ -308,7 +309,8 @@ void export_vtf_texture(scope _vtf)
 		)
 
 		.def("save",
-			&IVTFTextureExt::Save
+			&IVTFTextureExt::Save,
+			arg("file_path")
 		)
 
 		.def("open", &IVTFTextureExt::Open,
