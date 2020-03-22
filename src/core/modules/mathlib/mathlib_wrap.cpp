@@ -336,8 +336,8 @@ void export_qangle(scope _mathlib)
 
 		.def("get_angle_vectors",
 			GET_FUNCTION(void, AngleVectors, const QAngle &, Vector *, Vector *, Vector *),
-			(arg("forward")=NULL, arg("right")=NULL, arg("up")=NULL),
-			"Euler QAngle -> Basis Vectors.  Each vector is optional."
+			"Euler QAngle -> Basis Vectors.  Each vector is optional",
+			(arg("forward")=object(), arg("right")=object(), arg("up")=object())
 		)
 
 		.def("__getitem__",
