@@ -366,6 +366,32 @@ public:
 			BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Texture has no low res image data.")
 		}
 	}
+
+	static int ComputeMipLevelDimensionsExt(IVTFTexture* pTexture, int iMipLevel, int base_value)
+	{
+		int mip_count = pTexture->MipCount();
+		if (iMipLevel >= mip_count)
+			BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Texture has no mipmap: miplevel '%d', mipcount '%d'", iMipLevel, mip_count)
+		return (std::max)(1, base_value >> iMipLevel);
+	}
+
+	static int ComputeMipWidth(IVTFTexture* pTexture, int iMipLevel)
+	{
+		int width = pTexture->Width();
+		return IVTFTextureExt::ComputeMipLevelDimensionsExt(pTexture, iMipLevel, width);
+	}
+
+	static int ComputeMipHeight(IVTFTexture* pTexture, int iMipLevel)
+	{
+		int height = pTexture->Height();
+		return IVTFTextureExt::ComputeMipLevelDimensionsExt(pTexture, iMipLevel, height);
+	}
+
+	static int ComputeMipDepth(IVTFTexture* pTexture, int iMipLevel)
+	{
+		int depth = pTexture->Depth();
+		return IVTFTextureExt::ComputeMipLevelDimensionsExt(pTexture, iMipLevel, depth);
+	}
 };
 
 

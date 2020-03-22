@@ -207,6 +207,19 @@ void export_vtf_texture(scope _vtf)
 			&IVTFTexture::IsVolumeTexture
 		)
 
+		.def("compute_mip_width",
+			&IVTFTextureExt::ComputeMipWidth,
+			arg("mip_level")
+		)
+		.def("compute_mip_height",
+			&IVTFTextureExt::ComputeMipHeight,
+			arg("mip_level")
+		)
+		.def("compute_mip_depth",
+			&IVTFTextureExt::ComputeMipDepth,
+			arg("mip_level")
+		)
+
 		.def("compute_mip_size",
 			&IVTFTexture::ComputeMipSize,
 			arg("mip_level")
