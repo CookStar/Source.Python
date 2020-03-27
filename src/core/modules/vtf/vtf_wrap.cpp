@@ -36,8 +36,6 @@
 //-----------------------------------------------------------------------------
 static void export_functions(scope);
 static void export_vtf_texture(scope);
-//static void export_image_format(scope);
-//static void export_vtf_flags(scope);
 
 
 //-----------------------------------------------------------------------------
@@ -47,8 +45,6 @@ DECLARE_SP_MODULE(_vtf)
 {
 	export_functions(_vtf);
 	export_vtf_texture(_vtf);
-	//export_image_format(_vtf);
-	//export_vtf_flags(_vtf);
 }
 
 
@@ -92,13 +88,17 @@ void export_vtf_texture(scope _vtf)
 				&IVTFTextureExt::__init__2,
 				default_call_policies(),
 				(arg("width"), arg("height"), arg("depth"), arg("image_format"), arg("flags"), arg("frame_count"), arg("force_mip_count")=-1)
-			)
+			),
+			"Initializes the texture and allocates space for the bits.\n"
+			"In most cases, you shouldn't force the mip count."
 		)
 
 		.def(
 			"init",
 			&IVTFTexture::Init,
-			(arg("width"), arg("height"), arg("depth"), arg("image_format"), arg("flags"), arg("frame_count"), arg("force_mip_count")=-1)
+			(arg("width"), arg("height"), arg("depth"), arg("image_format"), arg("flags"), arg("frame_count"), arg("force_mip_count")=-1),
+			"Initializes the texture and allocates space for the bits.\n"
+			"In most cases, you shouldn't force the mip count."
 		)
 
 		.add_property(
@@ -113,19 +113,23 @@ void export_vtf_texture(scope _vtf)
 				&IVTFTexture::Reflectivity,
 				reference_existing_object_policy()
 			),
-			&IVTFTexture::SetReflectivity
+			&IVTFTexture::SetReflectivity,
+			"NOTE: reflectivity[0] = blue, [1] = greem, [2] = red."
 		)
 
 		.def(
 			"init_low_res_image",
 			&IVTFTexture::InitLowResImage,
-			(arg("width"), arg("height"), arg("image_format"))
+			(arg("width"), arg("height"), arg("image_format")),
+			"Methods to initialize the low-res image."
 		)
 
 		.def(
 			"unserialize",
 			&IVTFTextureExt::Unserialize,
-			(arg("texture"), arg("header_only")=false, arg("skip_mip_levels")=0, arg("header_fix")=true)
+			(arg("texture"), arg("header_only")=false, arg("skip_mip_levels")=0, arg("header_fix")=true),
+			"When unserializing, we can skip a certain number of mip levels, and we also can just load everything but the image data.\n"
+			"NOTE: If you skip mip levels, the height + width of the texture will change to reflect the size of the largest read in mip level."
 		)
 		.def(
 			"serialize",
@@ -158,13 +162,15 @@ void export_vtf_texture(scope _vtf)
 		.def(
 			"row_size_in_bytes",
 			&IVTFTexture::RowSizeInBytes,
-			(arg("mip_level")=0)
+			(arg("mip_level")=0),
+			"returns the size of one row of a particular mip level."
 		)
 
 		.def(
 			"face_size_in_bytes",
 			&IVTFTexture::FaceSizeInBytes,
-			(arg("mip_level")=0)
+			(arg("mip_level")=0),
+			"returns the size of one face of a particular mip level."
 		)
 
 		.add_property(
@@ -209,116 +215,145 @@ void export_vtf_texture(scope _vtf)
 
 		.def("compute_mip_width",
 			&IVTFTextureExt::ComputeMipWidth,
-			arg("mip_level")
+			arg("mip_level"),
+			"Computes the width of a particular mip level."
 		)
 		.def("compute_mip_height",
 			&IVTFTextureExt::ComputeMipHeight,
-			arg("mip_level")
+			arg("mip_level"),
+			"Computes the height of a particular mip level."
 		)
 		.def("compute_mip_depth",
 			&IVTFTextureExt::ComputeMipDepth,
-			arg("mip_level")
+			arg("mip_level"),
+			"Computes the depth of a particular mip level."
 		)
 
 		.def("compute_mip_size",
 			&IVTFTexture::ComputeMipSize,
-			arg("mip_level")
+			arg("mip_level"),
+			"Computes the size (in bytes) of a single mipmap of a single face of a single frame."
 		)
 		.def("compute_face_size",
 			&IVTFTexture::ComputeFaceSize,
-			(arg("starting_mip_level")=0)
+			(arg("starting_mip_level")=0),
+			"Computes the size (in bytes) of a single face of a single frame.\n"
+			"All mip levels starting at the specified mip level are included."
 		)
 		.def("compute_total_size",
-			&IVTFTexture::ComputeTotalSize
+			&IVTFTexture::ComputeTotalSize,
+			"Computes the total size (in bytes) of all faces, all frames."
 		)
 
 		.def("image_data_size",
-			GET_FUNCTION(int, IVTFTextureExt::ImageDataSize, IVTFTexture*)
+			GET_FUNCTION(int, IVTFTextureExt::ImageDataSize, IVTFTexture*),
+			"Returns the image data size."
 		)
 		.def("image_data_size",
 			GET_FUNCTION(int, IVTFTextureExt::ImageDataSize, IVTFTexture*, int, int, int),
-			(arg("frame"), arg("face"), arg("mip_level"))
+			(arg("frame"), arg("face"), arg("mip_level")),
+			"Returns the image data size associated with a particular frame, face, and mip level."
 		)
 		.def("image_data_size",
 			GET_FUNCTION(int, IVTFTextureExt::ImageDataSize, IVTFTexture*, int, int, int, int, int, int),
 			image_data_size_overload(
-				(arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0)
+				(arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0),
+				"Returns the image data size associated with a particular frame, face, mip level, and offset."
 			)
 		)
 
 		.def("get_image_data",
-			GET_FUNCTION(PyObject*, IVTFTextureExt::GetImageData, IVTFTexture*)
+			GET_FUNCTION(PyObject*, IVTFTextureExt::GetImageData, IVTFTexture*),
+			"Returns the image data."
 		)
 		.def("get_image_data",
 			GET_FUNCTION(PyObject*, IVTFTextureExt::GetImageData, IVTFTexture*, int, int, int),
-			(arg("frame"), arg("face"), arg("mip_level"))
+			(arg("frame"), arg("face"), arg("mip_level")),
+			"Returns the image data associated with a particular frame, face, and mip level."
 		)
 		.def("get_image_data",
 			GET_FUNCTION(PyObject*, IVTFTextureExt::GetImageData, IVTFTexture*, int, int, int, int, int, int),
 			get_image_data_overload(
-				(arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0)
+				(arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0),
+				"Returns the image data associated with a particular frame, face, mip level, and offset."
 			)
 		)
 
 		.def("set_image_data",
 			GET_FUNCTION(void, IVTFTextureExt::SetImageData, IVTFTexture*, PyObject*),
-			arg("image_data")
+			arg("image_data"),
+			"Sets the image data."
 		)
 		.def("set_image_data",
 			GET_FUNCTION(void, IVTFTextureExt::SetImageData, IVTFTexture*, PyObject*, int, int, int),
-			(arg("image_data"), arg("frame"), arg("face"), arg("mip_level"))
+			(arg("image_data"), arg("frame"), arg("face"), arg("mip_level")),
+			"Sets the image data associated with a particular frame, face, and mip level."
 		)
 		.def("set_image_data",
 			GET_FUNCTION(void, IVTFTextureExt::SetImageData, IVTFTexture*, PyObject*, int, int, int, int, int, int),
 			set_image_data_overload(
-				(arg("image_data"), arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0)
+				(arg("image_data"), arg("frame"), arg("face"), arg("mip_level"), arg("x"), arg("y"), arg("z")=0),
+				"Sets the image data associated with a particular frame, face, mip level, and offset."
 			)
 		)
 
 		.def("low_res_image_data_size",
-			&IVTFTextureExt::LowResImageDataSize
+			&IVTFTextureExt::LowResImageDataSize,
+			"Returns the low-res image data size."
 		)
 		.def("get_low_res_image_data",
-			&IVTFTextureExt::GetLowResImageData
+			&IVTFTextureExt::GetLowResImageData,
+			"Returns the low-res image data."
 		)
 		.def("set_low_res_image_data",
 			&IVTFTextureExt::SetLowResImageData,
-			arg("low_res_image_data")
+			arg("low_res_image_data"),
+			"Sets the low-res image data size."
 		)
 
+		//DXT is broken.
 		.def(
 			"convert_image_format",
 			&IVTFTexture::ConvertImageFormat,
-			(arg("image_format"), arg("normal_to_DUDV"))
+			(arg("image_format"), arg("normal_to_DUDV")),
+			"Converts the textures image format.\n"
+			"Use ImageFormat.DEFAULT if you want to be able to use various tool functions."
 		)
 
 		.def("fix_cubemap_face_orientation",
-			&IVTFTexture::FixCubemapFaceOrientation
+			&IVTFTexture::FixCubemapFaceOrientation,
+			"Fixes the cubemap faces orientation from our standard to the standard the material system needs."
 		)
 
 		.def("generate_mipmaps",
-			&IVTFTexture::GenerateMipmaps
+			&IVTFTexture::GenerateMipmaps,
+			"Generates mipmaps from the base mip levels."
 		)
 
 		.def("put_one_over_mip_level_in_alpha",
-			&IVTFTexture::PutOneOverMipLevelInAlpha
+			&IVTFTexture::PutOneOverMipLevelInAlpha,
+			"Put 1/miplevel (1..n) into alpha."
 		)
 
 		.def("compute_reflectivity",
-			&IVTFTexture::ComputeReflectivity
+			&IVTFTexture::ComputeReflectivity,
+			"Computes the reflectivity."
 		)
 
 		.def("compute_alpha_flags",
-			&IVTFTexture::ComputeAlphaFlags
+			&IVTFTexture::ComputeAlphaFlags,
+			"Computes the alpha flags."
 		)
 
 		.def("construct_low_res_image",
-			&IVTFTexture::ConstructLowResImage
+			&IVTFTexture::ConstructLowResImage,
+			"Generate the low-res image bits."
 		)
 
 		.def("set_alpha_test_threshholds",
 			&IVTFTexture::SetAlphaTestThreshholds,
-			(arg("base"), arg("high_freq"))
+			(arg("base"), arg("high_freq")),
+			"Sets threshhold values for alphatest mipmapping."
 		)
 
 		.def("save",
