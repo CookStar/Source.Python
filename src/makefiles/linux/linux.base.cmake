@@ -86,6 +86,9 @@ If(SOURCE_ENGINE MATCHES "csgo")
     Set(SOURCEPYTHON_LINK_LIBRARIES
         "${SOURCEPYTHON_LINK_LIBRARIES}"
          ${SOURCESDK_LIB}/linux32/release/libprotobuf.a
+         ${SOURCESDK_LIB}/linux/vtf.a
+         ${SOURCESDK_LIB}/linux/bitmap.a
+         ${SOURCESDK_LIB}/linux/libtier0_srv.so
     )
 EndIf()
 
