@@ -41,6 +41,9 @@ _disable_immunity_alpha = ConVar('sv_disable_immunity_alpha')
 class Player(_Player):
     """Class used to interact directly with players."""
 
+    # Instances of this class will be cached by default
+    caching = True
+
     def _get_kills(self):
         """Return the number of kills the player has."""
         return super().kills
@@ -156,7 +159,8 @@ class Player(_Player):
         self._spawn()
 
     @wrap_entity_mem_func
-    def give_named_item(self, item, sub_type=0, econ_item_view=None, unk=False, unk2=NULL):
+    def give_named_item(
+            self, item, sub_type=0, econ_item_view=None, unk=False, unk2=NULL):
         """Give the player a named item."""
         # TODO: What's the unk argument for?
         # unk2 is a Vector (position)? Should do some tests...
