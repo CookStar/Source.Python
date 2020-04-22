@@ -96,22 +96,13 @@ void export_net_channel(scope _net_channel)
 	);
 
 	NetChannel.def(
-		"request_file",
-		&INetChannel::RequestFile);
-
-	NetChannel.def(
-		"deny_file",
-		&INetChannel::DenyFile);
-
-	NetChannel.def(
-		"send_data",
-		&INetChannel::SendData,
-		("buffer", arg("reliable")=true)
+		"send_file",
+		&INetChannel::SendFile
 	);
 
 	NetChannel.def(
-		"send_file",
-		&INetChannel::SendFile
+		"request_file",
+		&INetChannel::RequestFile
 	);
 
 	NetChannel.def(
@@ -120,8 +111,9 @@ void export_net_channel(scope _net_channel)
 	);
 
 	NetChannel.def(
-		"request_file",
-		&INetChannel::RequestFile
+		"send_data",
+		&INetChannel::SendData,
+		("buffer", arg("reliable")=true)
 	);
 
 	// TODO: Export more
