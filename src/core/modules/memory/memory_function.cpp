@@ -188,7 +188,7 @@ bool CFunction::IsCallable()
 
 bool CFunction::IsHookable()
 {
-	return m_pCallingConvention.get() != NULL;
+	return m_pCallingConvention != nullptr;
 }
 
 bool CFunction::IsHooked()
