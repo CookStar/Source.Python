@@ -416,4 +416,7 @@ void CFunction::DeleteHook()
 	// Set the calling convention to NULL, because DynamicHooks will delete it otherwise.
 	pHook->m_pCallingConvention = NULL;
 	GetHookManager()->UnhookFunction((void *) m_ulAddr);
+
+	// We take back responsibility for the calling convention.
+	m_bAllocatedCallingConvention = true;
 }
