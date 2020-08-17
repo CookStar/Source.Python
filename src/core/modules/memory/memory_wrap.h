@@ -161,7 +161,7 @@ public:
 	}
 
 public:
-	std::shared_ptr<ICallingConvention> m_pDefaultCallingConvention = nullptr;
+	std::shared_ptr<ICallingConvention> m_pDefaultCallingConvention;
 	object								m_oCallingConvention = object();
 };
 
