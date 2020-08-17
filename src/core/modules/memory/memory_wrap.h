@@ -66,8 +66,9 @@ public:
 
 	~ICallingConventionWrapper()
 	{
-		delete m_pDefaultCallingConvention;
-		m_pDefaultCallingConvention = nullptr;
+		if (!m_oCallingConvention.is_none()){
+			Py_DECREF(m_oCallingConvention.ptr());
+		}
 	}
 
 	virtual std::list<Register_t> GetRegisters()
@@ -160,7 +161,8 @@ public:
 	}
 
 public:
-	ICallingConvention* m_pDefaultCallingConvention = nullptr;
+	std::shared_ptr<ICallingConvention> m_pDefaultCallingConvention = nullptr;
+	object								m_oCallingConvention = object();
 };
 
 

@@ -35,6 +35,7 @@
 // >> INCLUDES
 // ============================================================================
 #include <list>
+#include <memory>
 #include "hook.h"
 #include "convention.h"
 
@@ -50,7 +51,7 @@ public:
 	function was already hooked, the existing CHook instance will be
 	returned.
 	*/
-    CHook* HookFunction(void* pFunc, ICallingConvention* pConvention);
+    CHook* HookFunction(void* pFunc, const std::shared_ptr<ICallingConvention>& pConvention);
 	
 	/*
 	Removes all callbacks and restores the original function.

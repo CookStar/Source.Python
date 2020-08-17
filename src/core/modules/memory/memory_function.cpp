@@ -88,20 +88,20 @@ int GetDynCallConvention(Convention_t eConv)
 // ============================================================================
 // >> MakeDynamicHooksConvention
 // ============================================================================
-ICallingConvention* MakeDynamicHooksConvention(Convention_t eConv, std::vector<DataType_t> vecArgTypes, DataType_t returnType, int iAlignment)
+std::shared_ptr<ICallingConvention> MakeDynamicHooksConvention(Convention_t eConv, std::vector<DataType_t> vecArgTypes, DataType_t returnType, int iAlignment)
 {
 #ifdef _WIN32
 	switch (eConv)
 	{
-	case CONV_CDECL: return new x86MsCdecl(vecArgTypes, returnType, iAlignment);
-	case CONV_THISCALL: return new x86MsThiscall(vecArgTypes, returnType, iAlignment);
-	case CONV_STDCALL: return new x86MsStdcall(vecArgTypes, returnType, iAlignment);
+	case CONV_CDECL: return std::make_shared<x86MsCdecl>(vecArgTypes, returnType, iAlignment);
+	case CONV_THISCALL: return std::make_shared<x86MsThiscall>(vecArgTypes, returnType, iAlignment);
+	case CONV_STDCALL: return std::make_shared<x86MsStdcall>(vecArgTypes, returnType, iAlignment);
 	}
 #else
 	switch (eConv)
 	{
-	case CONV_CDECL: return new x86GccCdecl(vecArgTypes, returnType, iAlignment);
-	case CONV_THISCALL: return new x86GccThiscall(vecArgTypes, returnType, iAlignment);
+	case CONV_CDECL: return std::make_shared<x86GccCdecl>(vecArgTypes, returnType, iAlignment);
+	case CONV_THISCALL: return std::make_shared<x86GccThiscall>(vecArgTypes, returnType, iAlignment);
 	}
 #endif
 
@@ -150,34 +150,27 @@ CFunction::CFunction(unsigned long ulAddr, object oCallingConvention, object oAr
 
 		// A custom calling convention will be used...
 		m_eCallingConvention = CONV_CUSTOM;
-		m_oCallingConvention = oCallingConvention(m_tArgs, m_eReturnType);
+		object _oCallingConvention = oCallingConvention(m_tArgs, m_eReturnType);
 
-		// FIXME:
-		// This is required to fix a crash, but it will also cause a memory leak,
-		// because no calling convention object that is created via this method will ever be deleted.
-		// TODO: Pretty sure this was required due to the missing held type definition. It was added, but wasn't tested yet.
-		Py_INCREF(m_oCallingConvention.ptr());
-		m_pCallingConvention = extract<ICallingConvention*>(m_oCallingConvention);
+		Py_INCREF(_oCallingConvention.ptr());
+
+		ICallingConventionWrapper* _pCallingConvention = extract<ICallingConventionWrapper*>(_oCallingConvention);
+		m_pCallingConvention = std::shared_ptr<ICallingConventionWrapper>(_pCallingConvention);
+		_pCallingConvention->m_oCallingConvention = _oCallingConvention;
 	}
 
 	// Step 4: Get the DynCall calling convention
 	m_iCallingConvention = GetDynCallConvention(m_eCallingConvention);
-
-	// We allocated the calling convention, we are responsible to cleanup.
-	m_bAllocatedCallingConvention = true;
 }
 
 CFunction::CFunction(unsigned long ulAddr, Convention_t eCallingConvention,
-	int iCallingConvention, ICallingConvention* pCallingConvention, tuple tArgs,
+	int iCallingConvention, std::shared_ptr<ICallingConvention> pCallingConvention, tuple tArgs,
 	DataType_t eReturnType, object oConverter)
 	:CPointer(ulAddr)
 {
 	m_eCallingConvention = eCallingConvention;
 	m_iCallingConvention = iCallingConvention;
 	m_pCallingConvention = pCallingConvention;
-
-	// We didn't allocate the calling convention, someone else is responsible for it.
-	m_bAllocatedCallingConvention = false;
 
 	m_tArgs = tArgs;
 	m_eReturnType = eReturnType;
@@ -186,26 +179,6 @@ CFunction::CFunction(unsigned long ulAddr, Convention_t eCallingConvention,
 
 CFunction::~CFunction()
 {
-	// If we didn't allocate the calling convention, then it is not our responsibility.
-	if (!m_bAllocatedCallingConvention)
-		return;
-
-	// If we created calling convention, clean it up.
-	// This does not apply to hooked calling convention.
-	if (m_oCallingConvention.is_none())
-	{
-		delete m_pCallingConvention;
-	}
-	else
-	{
-		ICallingConventionWrapper* _pCallingConventionWrapper = extract<ICallingConventionWrapper*>(m_oCallingConvention);
-
-		Py_DECREF(m_oCallingConvention.ptr());
-
-		delete _pCallingConventionWrapper;
-	}
-
-	m_pCallingConvention = NULL;
 }
 
 bool CFunction::IsCallable()
@@ -215,7 +188,7 @@ bool CFunction::IsCallable()
 
 bool CFunction::IsHookable()
 {
-	return m_pCallingConvention != NULL;
+	return m_pCallingConvention.get() != NULL;
 }
 
 bool CFunction::IsHooked()
@@ -339,7 +312,7 @@ object CFunction::SkipHooks(tuple args, dict kw)
 	return Call(args, kw);
 }
 
-CHook* HookFunctionHelper(void* addr, ICallingConvention* pConv)
+CHook* HookFunctionHelper(void* addr, const std::shared_ptr<ICallingConvention>& pConv)
 {
 	CHook* result;
 	TRY_SEGV()
@@ -386,9 +359,6 @@ void CFunction::AddHook(HookType_t eType, PyObject* pCallable)
 
 	if (!pHook) {
 		pHook = HookFunctionHelper((void *) m_ulAddr, m_pCallingConvention);
-
-		// DynamicHooks will handle our convention from there, regardless if we allocated it or not.
-		m_bAllocatedCallingConvention = false;
 	}
 
 	// Add the hook handler. If it's already added, it won't be added twice
@@ -413,7 +383,6 @@ void CFunction::DeleteHook()
 		return;
 
 	g_mapCallbacks.erase(pHook);
-	// Set the calling convention to NULL, because DynamicHooks will delete it otherwise.
-	pHook->m_pCallingConvention = NULL;
+
 	GetHookManager()->UnhookFunction((void *) m_ulAddr);
 }

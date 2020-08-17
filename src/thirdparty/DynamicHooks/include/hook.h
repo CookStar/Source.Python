@@ -36,6 +36,8 @@
 // ============================================================================
 #include <list>
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "registers.h"
 #include "convention.h"
@@ -87,7 +89,7 @@ private:
 	@param <pConvention>:
 	The calling convention of <pFunc>.
 	*/
-	CHook(void* pFunc, ICallingConvention* pConvention);
+	CHook(void* pFunc, std::shared_ptr<ICallingConvention> pConvention);
 	~CHook();
 
 public:
@@ -164,7 +166,7 @@ public:
 	// Address of the original function
 	void* m_pFunc;
 
-	ICallingConvention* m_pCallingConvention;
+	std::shared_ptr<ICallingConvention> m_pCallingConvention;
 
 	// Address of the bridge
 	void* m_pBridge;

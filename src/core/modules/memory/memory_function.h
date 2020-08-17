@@ -30,6 +30,8 @@
 // ============================================================================
 // >> INCLUDES
 // ============================================================================
+#include <memory>
+
 // Memory
 #include "memory_pointer.h"
 
@@ -57,7 +59,7 @@ class CFunction: public CPointer, private boost::noncopyable
 public:
 	CFunction(unsigned long ulAddr, object oCallingConvention, object oArgs, object oReturnType);
 	CFunction(unsigned long ulAddr, Convention_t eCallingConvention, int iCallingConvention,
-		ICallingConvention* pCallingConvention, boost::python::tuple tArgs,
+		std::shared_ptr<ICallingConvention> pCallingConvention, boost::python::tuple tArgs,
 		DataType_t eReturnType, object oConverter);
 
 	~CFunction();
@@ -89,28 +91,24 @@ public:
 	void DeleteHook();
     
 public:
-	boost::python::tuple	m_tArgs;
-	object					m_oConverter;
-	DataType_t				m_eReturnType;
+	boost::python::tuple				m_tArgs;
+	object								m_oConverter;
+	DataType_t							m_eReturnType;
 
 	// Shared built-in calling convention identifier
-	Convention_t			m_eCallingConvention;
+	Convention_t						m_eCallingConvention;
 
 	// DynCall calling convention
-	int						m_iCallingConvention;
+	int									m_iCallingConvention;
 
 	// DynamicHooks calling convention (built-in and custom)
-	ICallingConvention*		m_pCallingConvention;
-	bool					m_bAllocatedCallingConvention;
-
-	// Custom calling convention
-	object					m_oCallingConvention = object();
+	std::shared_ptr<ICallingConvention>	m_pCallingConvention;
 };
 
 
 //---------------------------------------------------------------------------------
 // Functions
 //---------------------------------------------------------------------------------
-ICallingConvention* MakeDynamicHooksConvention(Convention_t eConv, std::vector<DataType_t> vecArgTypes, DataType_t returnType, int iAlignment=4);
+std::shared_ptr<ICallingConvention> MakeDynamicHooksConvention(Convention_t eConv, std::vector<DataType_t> vecArgTypes, DataType_t returnType, int iAlignment=4);
 
 #endif // _MEMORY_FUNCTION_H
