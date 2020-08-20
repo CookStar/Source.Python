@@ -89,7 +89,7 @@ private:
 	@param <pConvention>:
 	The calling convention of <pFunc>.
 	*/
-	CHook(void* pFunc, std::shared_ptr<ICallingConvention> pConvention);
+	CHook(void* pFunc, const std::shared_ptr<ICallingConvention>& pConvention);
 	~CHook();
 
 public:

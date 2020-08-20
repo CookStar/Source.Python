@@ -164,7 +164,7 @@ CFunction::CFunction(unsigned long ulAddr, object oCallingConvention, object oAr
 }
 
 CFunction::CFunction(unsigned long ulAddr, Convention_t eCallingConvention,
-	int iCallingConvention, std::shared_ptr<ICallingConvention> pCallingConvention, tuple tArgs,
+	int iCallingConvention, const std::shared_ptr<ICallingConvention>& pCallingConvention, tuple tArgs,
 	DataType_t eReturnType, object oConverter)
 	:CPointer(ulAddr)
 {

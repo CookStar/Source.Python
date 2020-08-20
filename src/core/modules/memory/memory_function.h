@@ -59,7 +59,7 @@ class CFunction: public CPointer, private boost::noncopyable
 public:
 	CFunction(unsigned long ulAddr, object oCallingConvention, object oArgs, object oReturnType);
 	CFunction(unsigned long ulAddr, Convention_t eCallingConvention, int iCallingConvention,
-		std::shared_ptr<ICallingConvention> pCallingConvention, boost::python::tuple tArgs,
+		const std::shared_ptr<ICallingConvention>& pCallingConvention, boost::python::tuple tArgs,
 		DataType_t eReturnType, object oConverter);
 
 	~CFunction();
