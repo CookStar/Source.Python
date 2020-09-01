@@ -91,6 +91,8 @@ public:
 
 	void DeleteHook();
 
+	bool AddHook(HookType_t eType, HookHandlerFn* pFunc);
+
 public:
 	boost::python::tuple	m_tArgs;
 	object					m_oConverter;
