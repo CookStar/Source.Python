@@ -103,25 +103,13 @@ void CTransmitManager::initialize()
 			"CheckTransmit is invalid or not hookable."
 		)
 
-	m_pCheckTransmit = (void *)pFunc->m_ulAddr;
-	CHook *pHook = GetHookManager()->FindHook(m_pCheckTransmit);
-	if (!pHook)
-	{
-		pHook = GetHookManager()->HookFunction(m_pCheckTransmit, pFunc->m_pCallingConvention);
-		if (!pHook)
-			BOOST_RAISE_EXCEPTION(
-				PyExc_ValueError,
-				"Failed to hook CheckTransmit."
-			)
-	}
+	if (!pFunc->AddHook(HOOKTYPE_POST, (HookHandlerFn *)&CTransmitManager::_post_check_transmit))
+		BOOST_RAISE_EXCEPTION(
+			PyExc_ValueError,
+			"Failed to hook CheckTransmit."
+		)
 
-	pFunc->m_bAllocatedCallingConvention = false;
 	delete pFunc;
-
-	pHook->AddCallback(
-		HOOKTYPE_POST,
-		(HookHandlerFn *)&CTransmitManager::_post_check_transmit
-	);
 }
 
 
