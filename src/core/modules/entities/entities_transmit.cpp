@@ -54,7 +54,7 @@ CTransmitManager* CTransmitManager::instance = nullptr;
 // CTransmitManager class.
 //-----------------------------------------------------------------------------
 CTransmitManager::CTransmitManager()
-	:m_arrayFilterIndexes{}
+	:m_arrayFilterIndexes()
 {
 	CFunctionInfo *pFunctionInfo = GetFunctionInfo(&IServerGameEnts::CheckTransmit);
 	if (!pFunctionInfo)
