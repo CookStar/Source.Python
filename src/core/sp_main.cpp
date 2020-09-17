@@ -53,6 +53,7 @@
 #include "vphysics_interface.h"
 #include "datacache/imdlcache.h"
 #include "ivoiceserver.h"
+#include "ispatialpartition.h"
 
 #include "manager.h"
 
@@ -92,6 +93,7 @@ CGlobalVars*			gpGlobals			= NULL;
 IFileSystem*			filesystem			= NULL;
 IServerGameDLL*			servergamedll		= NULL;
 IServerTools*			servertools			= NULL;
+ISpatialPartition*		partition			= NULL;
 IPhysics*				physics				= NULL;
 IPhysicsCollision*		physcollision		= NULL;
 IPhysicsSurfaceProps*	physprops			= NULL;
@@ -138,6 +140,7 @@ InterfaceHelper_t gEngineInterfaces[] = {
 	{VENGINE_SERVER_RANDOM_INTERFACE_VERSION, (void **)&randomStr},
 	{FILESYSTEM_INTERFACE_VERSION, (void **)&filesystem},
 	{INTERFACENAME_NETWORKSTRINGTABLESERVER, (void **)&networkstringtable},
+	{INTERFACEVERSION_SPATIALPARTITION, (void **)&partition},
 	{VPHYSICS_INTERFACE_VERSION, (void **)&physics},
 	{VPHYSICS_COLLISION_INTERFACE_VERSION, (void **)&physcollision},
 	{VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, (void **)&physprops},

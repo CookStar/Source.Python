@@ -375,6 +375,17 @@ Set(SOURCEPYTHON_NET_CHANNEL_MODULE_SOURCES
 )
 
 # ------------------------------------------------------------------
+# Partition module.
+# ------------------------------------------------------------------
+Set(SOURCEPYTHON_PARTITION_MODULE_HEADERS
+    core/modules/partition/partition.h
+)
+
+Set(SOURCEPYTHON_PARTITION_MODULE_SOURCES
+    core/modules/partition/partition_wrap.cpp
+)
+
+# ------------------------------------------------------------------
 # Physics module.
 # ------------------------------------------------------------------
 Set(SOURCEPYTHON_PHYSICS_MODULE_HEADERS
@@ -530,6 +541,9 @@ Set(SOURCEPYTHON_MODULE_FILES
     ${SOURCEPYTHON_NET_CHANNEL_MODULE_HEADERS}
     ${SOURCEPYTHON_NET_CHANNEL_MODULE_SOURCES}
 
+    ${SOURCEPYTHON_PARTITION_MODULE_HEADERS}
+    ${SOURCEPYTHON_PARTITION_MODULE_SOURCES}
+
     ${SOURCEPYTHON_PHYSICS_MODULE_HEADERS}
     ${SOURCEPYTHON_PHYSICS_MODULE_SOURCES}
 
@@ -582,6 +596,7 @@ Source_Group("Header Files\\Modules\\Mathlib"                FILES ${SOURCEPYTHO
 Source_Group("Header Files\\Modules\\Memory"                 FILES ${SOURCEPYTHON_MEMORY_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Messages"               FILES ${SOURCEPYTHON_MESSAGES_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\NetChannel"             FILES ${SOURCEPYTHON_NET_CHANNEL_MODULE_HEADERS})
+Source_Group("Header Files\\Modules\\Partition"              FILES ${SOURCEPYTHON_PARTITION_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Physics"                FILES ${SOURCEPYTHON_PHYSICS_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Players"                FILES ${SOURCEPYTHON_PLAYERS_MODULE_HEADERS})
 Source_Group("Header Files\\Modules\\Plugins"                FILES ${SOURCEPYTHON_PLUGINS_MODULE_HEADERS})
@@ -612,6 +627,7 @@ Source_Group("Source Files\\Modules\\Mathlib"                FILES ${SOURCEPYTHO
 Source_Group("Source Files\\Modules\\Memory"                 FILES ${SOURCEPYTHON_MEMORY_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Messages"               FILES ${SOURCEPYTHON_MESSAGES_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\NetChannel"             FILES ${SOURCEPYTHON_NET_CHANNEL_MODULE_SOURCES})
+Source_Group("Source Files\\Modules\\Partition"              FILES ${SOURCEPYTHON_PARTITION_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Physics"                FILES ${SOURCEPYTHON_PHYSICS_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Players"                FILES ${SOURCEPYTHON_PLAYERS_MODULE_SOURCES})
 Source_Group("Source Files\\Modules\\Plugins"                FILES ${SOURCEPYTHON_PLUGINS_MODULE_SOURCES})
