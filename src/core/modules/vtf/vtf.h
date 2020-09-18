@@ -34,7 +34,6 @@
 #include "public/vtf/vtf.h"
 #include "public/filesystem.h"
 #include "public/tier1/utlbuffer.h"
-//#include "tier0/dbg.h"
 
 
 //---------------------------------------------------------------------------------
@@ -105,13 +104,6 @@ public:
 
 		return pTexture;
 	}
-
-	/*
-	static void Deleter(IVTFTexture* pTexture)
-	{
-		DestroyVTFTexture(pTexture);
-	}
-	*/
 
 	static void Save(IVTFTexture* pTexture, const char* pFileName)
 	{
