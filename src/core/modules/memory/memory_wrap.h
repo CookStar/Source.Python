@@ -62,10 +62,26 @@ public:
 		}
 	}
 
-	~ICallingConventionWrapper()
+	virtual ~ICallingConventionWrapper()
 	{
 		delete m_pDefaultCallingConvention;
 		m_pDefaultCallingConvention = nullptr;
+	}
+
+	static void Deleter(ICallingConventionWrapper *pThis)
+	{
+		if (pThis->m_bHooked)
+			return;
+
+		delete pThis;
+	}
+
+	static boost::shared_ptr<ICallingConventionWrapper> __init__(
+		object oArgTypes, DataType_t returnType, int iAlignment=4, Convention_t eDefaultConv=CONV_CUSTOM)
+	{
+		return boost::shared_ptr<ICallingConventionWrapper>(
+			new ICallingConventionWrapper(oArgTypes, returnType, iAlignment, eDefaultConv), &Deleter
+		);
 	}
 
 	virtual std::list<Register_t> GetRegisters()
