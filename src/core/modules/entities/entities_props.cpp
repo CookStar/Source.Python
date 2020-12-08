@@ -147,6 +147,10 @@ BoostSendVarProxyFn SendPropSharedExt::get_proxy_function(SendProp *pSendProp)
 	if (pSendProp->GetType() == DPT_DataTable)
 		BOOST_RAISE_EXCEPTION(PyExc_TypeError, "%s is a DataTable.", pSendProp->GetName());
 
+	if (!pSendProp->GetProxyFn()) {
+		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "%s has no proxy function.", pSendProp->GetName());
+	}
+
 	return BoostSendVarProxyFn(pSendProp->GetProxyFn());
 }
 
@@ -158,7 +162,26 @@ BoostDataTableProxyFn SendPropSharedExt::get_data_table_proxy_function(SendProp 
 	if (pSendProp->GetType() != DPT_DataTable)
 		BOOST_RAISE_EXCEPTION(PyExc_TypeError, "%s is not a DataTable.", pSendProp->GetName());
 
+	if (!pSendProp->GetDataTableProxyFn()) {
+		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "%s has no data table proxy function.", pSendProp->GetName());
+	}
+
 	return BoostDataTableProxyFn(pSendProp->GetDataTableProxyFn());
+}
+
+BoostArrayLengthProxyFn SendPropSharedExt::get_array_length_proxy_function(SendProp *pSendProp)
+{
+	if (pSendProp->IsExcludeProp())
+		BOOST_RAISE_EXCEPTION(PyExc_TypeError, "%s is excluded.", pSendProp->GetName());
+
+	if (pSendProp->GetType() != DPT_Array)
+		BOOST_RAISE_EXCEPTION(PyExc_TypeError, "%s is not an array.", pSendProp->GetName());
+
+	if (!pSendProp->GetArrayLengthProxy()) {
+		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "%s has no array length proxy function.", pSendProp->GetName());
+	}
+
+	return BoostArrayLengthProxyFn(pSendProp->GetArrayLengthProxy());
 }
 
 
