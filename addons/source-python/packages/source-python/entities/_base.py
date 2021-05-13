@@ -67,7 +67,7 @@ from studio.constants import INVALID_ATTACHMENT_INDEX
 # Source.Python Imports
 #   Entities
 from _entities._entity import BaseEntity
-from _entities._transmit import transmit_manager
+#from _entities._transmit import transmit_manager
 
 
 # =============================================================================
@@ -876,4 +876,4 @@ def _on_networked_entity_deleted(index):
         cls.cache.pop(index, None)
 
     # Reset the entity's hidden state.
-    transmit_manager.reset(index)
+    #transmit_manager.reset(index)

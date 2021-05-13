@@ -82,7 +82,7 @@ from auth.manager import auth_manager
 # =============================================================================
 # Source.Python Imports
 #   Entities
-from _entities._transmit import transmit_manager
+#from _entities._transmit import transmit_manager
 
 
 # =============================================================================
