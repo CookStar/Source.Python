@@ -163,9 +163,6 @@ CFunction::CFunction(unsigned long ulAddr, object oCallingConvention, object oAr
 
 	// Step 4: Get the DynCall calling convention
 	m_iCallingConvention = GetDynCallConvention(m_eCallingConvention);
-
-	// We allocated the calling convention, we are responsible to cleanup.
-	m_bAllocatedCallingConvention = true;
 }
 
 CFunction::CFunction(unsigned long ulAddr, Convention_t eCallingConvention,
@@ -180,6 +177,29 @@ CFunction::CFunction(unsigned long ulAddr, Convention_t eCallingConvention,
 	m_tArgs = tArgs;
 	m_eReturnType = eReturnType;
 	m_oConverter = oConverter;
+}
+
+CFunction::CFunction(const CFunction& obj)
+	:CPointer(obj)
+{
+	m_tArgs = obj.m_tArgs;
+	m_eReturnType = obj.m_eReturnType;
+	m_oConverter = obj.m_oConverter;
+
+	m_eCallingConvention = obj.m_eCallingConvention;
+	m_iCallingConvention = obj.m_iCallingConvention;
+
+	if (m_eCallingConvention != CONV_CUSTOM)
+	{
+		m_pCallingConvention = MakeDynamicHooksConvention(m_eCallingConvention, ObjectToDataTypeVector(m_tArgs), m_eReturnType);
+		m_oCallingConvention = object();
+	}
+	else
+	{
+		m_pCallingConvention = obj.m_pCallingConvention;
+		m_oCallingConvention = obj.m_oCallingConvention;
+		Py_INCREF(m_oCallingConvention.ptr());
+	}
 }
 
 CFunction::~CFunction()
@@ -283,7 +303,7 @@ object CFunction::Call(tuple args, dict kw)
 			{
 				unsigned long ulAddr = 0;
 				if (arg.ptr() != Py_None)
-					ulAddr = ExtractPointer(arg)->m_ulAddr;
+					ulAddr = ExtractAddress(arg);
 
 				dcArgPointer(g_pCallVM, ulAddr);
 				break;
@@ -456,7 +476,4 @@ void CFunction::DeleteHook()
 	// Set the calling convention to NULL, because DynamicHooks will delete it otherwise.
 	pHook->m_pCallingConvention = NULL;
 	GetHookManager()->UnhookFunction((void *) m_ulAddr);
-
-	// We take back responsibility for the calling convention.
-	m_bAllocatedCallingConvention = true;
 }
