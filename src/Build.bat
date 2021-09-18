@@ -130,7 +130,7 @@ goto CloneRepo
     cmake . -B%BUILDDIR% -G"Visual Studio 10" -DBRANCH=%branch%
 
     if %use_msbuild% == 1 (
-        msbuild %BUILDDIR%\source-python.sln /p:Configuration="Release" /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0"
+        "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" %BUILDDIR%\source-python.sln /p:Configuration="Release" /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0"
     ) else (
         :: Pause to show the process is completed
         pause
