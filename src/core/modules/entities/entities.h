@@ -90,6 +90,20 @@ public:
 
 
 //-----------------------------------------------------------------------------
+// CBaseHandle extension class.
+//-----------------------------------------------------------------------------
+class CBaseHandleExt
+{
+public:
+	static boost::shared_ptr<CBaseHandle> __init__(unsigned long value)
+	{
+		CBaseHandle hBaseHandle = CBaseHandle::UnsafeFromIndex(value);
+		return boost::shared_ptr<CBaseHandle>(new CBaseHandle(hBaseHandle));
+	}
+};
+
+
+//-----------------------------------------------------------------------------
 // CTakeDamageInfo wrapper class.
 //-----------------------------------------------------------------------------
 class TakeDamageInfoBaseWrapper: public CTakeDamageInfo
